@@ -56,7 +56,8 @@ async function buildPage(){
                 const fileName = file.name.slice(0, file.name.lastIndexOf("."));
                 if(templateTags.includes(fileName)){
                     const componentContents = await readFile(`${componentsFolderPath}\\${file.name}`, { encoding: 'utf8' });
-                    template = template.replace(`{{${fileName}}}`, componentContents);
+                    let re = new RegExp(`{{${fileName}}}`,"g");
+                    template = template.replace(re, componentContents);
                 }
             }
         }
