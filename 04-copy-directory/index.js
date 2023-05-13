@@ -12,9 +12,9 @@ async function copyDir(sourceFolder, targetFolder){
         const contents = await readdir(sourceFolder, {withFileTypes: true});
           for (const content of contents){
           if(content.isFile()){
-              await copyFile(sourceFolder + `\\${content.name}`, targetFolder + `\\${content.name}`);
+            await copyFile(path.join(sourceFolder, content.name), path.join(targetFolder, content.name));
           } else {
-              copyDir(sourceFolder + `\\${content.name}`, targetFolder + `\\${content.name}`)
+            copyDir(path.join(sourceFolder, content.name), path.join(targetFolder, content.name));
           }
         }
     } catch (err) {

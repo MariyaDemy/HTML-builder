@@ -5,9 +5,9 @@ const distFolderPath = path.join(__dirname, 'project-dist');
 const templatePath = path.join(__dirname, 'template.html');
 const componentsFolderPath = path.join(__dirname, 'components');
 const stylesFolderPath = path.join(__dirname, 'styles');
-const distHtmlFilePath = distFolderPath + "\\index.html";
-const distCsslFilePath = distFolderPath + "\\style.css";
-const distAssetsFolderPath = distFolderPath + "\\assets";
+const distHtmlFilePath = path.join(distFolderPath, 'index.html');
+const distCsslFilePath = path.join(distFolderPath, 'style.css');
+const distAssetsFolderPath = path.join(distFolderPath, 'assets');
 const copyFolderPath = path.join(__dirname, 'assets');
 
 async function mergeStyles(){
@@ -16,7 +16,7 @@ async function mergeStyles(){
     const files = await readdir(stylesFolderPath, {withFileTypes: true});
     for (const file of files){
         if(file.isFile() && /\.css$/.test(file.name)){
-            const fileContents = await readFile(`${stylesFolderPath}\\${file.name}`, { encoding: 'utf8' });
+            const fileContents = await readFile(path.join(stylesFolderPath, file.name), { encoding: 'utf8' });
             await appendFile(distCsslFilePath, fileContents);
         }
     }
@@ -31,11 +31,11 @@ async function copyDir(sourceFolder, targetFolder){
       await mkdir(targetFolder, { recursive: true });
       const contents = await readdir(sourceFolder, {withFileTypes: true});
         for (const content of contents){
-        if(content.isFile()){
-            await copyFile(sourceFolder + `\\${content.name}`, targetFolder + `\\${content.name}`);
-        } else {
-            copyDir(sourceFolder + `\\${content.name}`, targetFolder + `\\${content.name}`)
-        }
+          if(content.isFile()){
+            await copyFile(path.join(sourceFolder, content.name), path.join(targetFolder, content.name));
+          } else {
+            copyDir(path.join(sourceFolder, content.name), path.join(targetFolder, content.name));
+          }
       }
   } catch (err) {
       console.error(err.message);
@@ -55,7 +55,7 @@ async function buildPage(){
             if(file.isFile() && /\.html$/.test(file.name)){
                 const fileName = file.name.slice(0, file.name.lastIndexOf("."));
                 if(templateTags.includes(fileName)){
-                    const componentContents = await readFile(`${componentsFolderPath}\\${file.name}`, { encoding: 'utf8' });
+                    const componentContents = await readFile(path.join(componentsFolderPath, file.name), { encoding: 'utf8' });
                     let re = new RegExp(`{{${fileName}}}`,"g");
                     template = template.replace(re, componentContents);
                 }
